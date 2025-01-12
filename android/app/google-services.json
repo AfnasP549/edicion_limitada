@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "773729323612",
+    "project_id": "edicion-limitada",
+    "storage_bucket": "edicion-limitada.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773729323612:android:b2295b78072cd99db7f499",
+        "android_client_info": {
+          "package_name": "com.example.e"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKNdqi3jHIwaP9lIJ5-EcK9iVwut9HJjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773729323612:android:62082afde81dfc25b7f499",
+        "android_client_info": {
+          "package_name": "com.example.edicion_limitada"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKNdqi3jHIwaP9lIJ5-EcK9iVwut9HJjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
