@@ -16,7 +16,9 @@ class AppColor{
 
   //!Searchbar 
                                 //  color: Colors.grey.shade300,
-  static Color GreyShade = Colors.grey.shade300;
+  static Color greyShade = Colors.grey.shade300;
+
+  
 
 
  

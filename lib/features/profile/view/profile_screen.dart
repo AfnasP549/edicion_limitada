@@ -1,162 +1,210 @@
-// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
-
-import 'package:edicion_limitada/common/utils/app_color.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:edicion_limitada/features/auth/bloc/auth_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edicion_limitada/features/auth/views/service/auth_service.dart';
-import 'package:edicion_limitada/features/auth/views/pages/login_screen.dart';
+import 'package:edicion_limitada/features/profile/model/profile_model.dart';
+import 'package:edicion_limitada/features/profile/view/edit_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _UserProfileScreenState createState() => _UserProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _auth = AuthService();
+  UserModel? userProfile;
+
+  Stream<UserModel?> getUserProfile(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.exists) {
+        return UserModel.fromMap(snapshot.data()!);
+      }
+      return null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    //  backgroundColor: const Color.fromARGB(255, 63, 62, 61),
-      appBar: AppBar(
-     //   backgroundColor: Color(0xFF06B6D4),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text('Heyy'),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final shouldLogout = await _showLogoutConfirmationDialog(context);
-              if (shouldLogout == true) {
-                context.read<AuthBloc>().add(Signout());
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: StreamBuilder(
+            stream: _auth.userStream,
+            builder: (context, authSnapshot) {
+              if (authSnapshot.hasData) {
+                final user = authSnapshot.data;
+
+                // this stream builder for getting name and email id from authentication
+                return StreamBuilder<UserModel?>(
+                  stream: getUserProfile(user!.uid),
+                  builder: (context, profileSnapshot) {
+                    final userProfile = profileSnapshot.data;
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Name field remains the same
+                        Text(
+                          'Name',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(13.0),
+                            child: Text(
+                              userProfile?.fullName ?? user.displayName ?? '',
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 69, 68, 68),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Email field remains the same
+                        SizedBox(height: 10),
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(13.0),
+                            child: Text(
+                              user.email ?? '',
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 69, 68, 68),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Updated Phone Number field
+                        SizedBox(height: 10),
+                        Text(
+                          'Phone Number',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(13.0),
+                            child: Text(
+                              userProfile?.number == 0
+                                  ? ''
+                                  : userProfile?.number.toString() ?? '',
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 69, 68, 68),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Updated DOB field
+                        SizedBox(height: 10),
+                        Text(
+                          'D O B',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(13.0),
+                            child: Text(
+                              userProfile?.dob == 0
+                                  ? ''
+                                  : DateFormat('dd-MM-yyyy').format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          userProfile?.dob ?? 0)),
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 69, 68, 68),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Spacer(),
+
+                        // Edit Profile button with updated UserModel
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => EditProfile(
+                                currentUser: UserModel(
+                                  uid: user.uid,
+                                  fullName:userProfile?.fullName ?? user.displayName ?? '',
+                                  email: user.email ?? '',
+                                  number: userProfile?.number ?? 0,
+                                  dob: userProfile?.dob ?? 0,
+                                ),
+                                onUpdate: (updatedUser) {},
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: Size(double.infinity, 50)),
+                          child: Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
               }
+              return const CircularProgressIndicator();
             },
           ),
-        ],
-      ),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is AuthInitial) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => Login()),
-              (route) => false,
-            );
-          }
-        },
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  height: 140,
-                 // height: MediaQuery.of(context).size.height * 0.4,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(
-                        color: AppColor.GreyShade,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(60),
-                          bottomRight: Radius.circular(60),
-                        )
-                  ),
-                  child: Text('Profile',style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40
-                  ),),
-                ),
-                Positioned(
-                  bottom: -150,
-                  child: Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Column(children: [
-                      // Container(
-                      //   padding: EdgeInsets.all(3),
-                      //   decoration: BoxDecoration(
-                      //   color: Colors.white,
-                      //   shape: BoxShape.circle,
-                      //   border: Border.all(color: Colors.white, width: 2),
-                      //   ),
-                      //   child: const CircleAvatar(
-                      //     radius: 80,
-                      //     backgroundColor: Colors.black,
-                      //     child: Icon(Icons.person, size: 100, color: Colors.white,),
-                      //   ),
-                      // ),
-                       SizedBox(height: 16),
-
-                       StreamBuilder(
-                        stream: _auth.userStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final user = snapshot.data;
-                            return Column(
-                              children: [
-                                Text(
-                                  user?.displayName ?? '',
-                                  style:TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 30,
-                                  )
-                                  // Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  user?.email ?? '',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          return const CircularProgressIndicator();
-                        },
-                      ),
-                    ],),
-                  ),
-                )
-              ],
-            ),
-          ],
         ),
       ),
-    );
-  }
-
-  Future<bool?> _showLogoutConfirmationDialog(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Confirm Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Logout'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

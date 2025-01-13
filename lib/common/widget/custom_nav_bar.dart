@@ -1,5 +1,5 @@
 import 'package:edicion_limitada/common/utils/app_color.dart';
-import 'package:edicion_limitada/features/profile/view/profile_screen.dart';
+import 'package:edicion_limitada/features/account/account_screen.dart';
 import 'package:edicion_limitada/screens/favorite_screen.dart';
 import 'package:edicion_limitada/screens/home_screen.dart';
 import 'package:edicion_limitada/screens/order_screen.dart';
@@ -22,7 +22,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
     const HomeScreen(),
     FavoriteScreen(),
     ShoppingScreen(),
-    ProfileScreen(),
+    AccountScreen(),
     OrderScreen(),
     
   ];
@@ -46,7 +46,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                   color: AppColor.primary,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [BoxShadow(
-                    color: AppColor.GreyShade,
+                    color: AppColor.greyShade,
                     blurRadius: 10,
                     spreadRadius: 2,
                     offset: Offset(0, 5)
@@ -59,7 +59,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
                     backgroundColor: AppColor.primary,
                     color: AppColor.tertiary,
                     activeColor: AppColor.tertiary,
-                    tabBackgroundColor: AppColor.GreyShade,
+                    tabBackgroundColor: AppColor.greyShade,
                     padding: const EdgeInsets.all(1),
                     onTabChange: (index) {
                       setState(() {

@@ -1,4 +1,3 @@
-import 'package:edicion_limitada/common/widget/custom_bottom_navigation_bar.dart';
 import 'package:edicion_limitada/common/widget/custom_nav_bar.dart';
 import 'package:edicion_limitada/features/auth/views/pages/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';

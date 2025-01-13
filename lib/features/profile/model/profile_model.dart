@@ -5,23 +5,30 @@ class UserModel {
   final String uid;
   final String fullName;
   final String email;
+  final int number;
+  final int dob;
   UserModel({
     required this.uid,
     required this.fullName,
     required this.email,
+    required this.number,
+    required this.dob,
   });
  
-  
 
   UserModel copyWith({
     String? uid,
     String? fullName,
     String? email,
+    int? number,
+    int? dob,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
+      number: number ?? this.number,
+      dob: dob ?? this.dob,
     );
   }
 
@@ -30,6 +37,8 @@ class UserModel {
       'uid': uid,
       'fullName': fullName,
       'email': email,
+      'number': number,
+      'dob': dob,
     };
   }
 
@@ -38,6 +47,8 @@ class UserModel {
       uid: map['uid'] as String,
       fullName: map['fullName'] as String,
       email: map['email'] as String,
+      number: map['number'] as int,
+      dob: map['dob'] as int,
     );
   }
 
@@ -46,7 +57,9 @@ class UserModel {
   factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'UserModel(uid: $uid, fullName: $fullName, email: $email)';
+  String toString() {
+    return 'UserModel(uid: $uid, fullName: $fullName, email: $email, number: $number, dob: $dob)';
+  }
 
   @override
   bool operator ==(covariant UserModel other) {
@@ -55,9 +68,17 @@ class UserModel {
     return 
       other.uid == uid &&
       other.fullName == fullName &&
-      other.email == email;
+      other.email == email &&
+      other.number == number &&
+      other.dob == dob;
   }
 
   @override
-  int get hashCode => uid.hashCode ^ fullName.hashCode ^ email.hashCode;
+  int get hashCode {
+    return uid.hashCode ^
+      fullName.hashCode ^
+      email.hashCode ^
+      number.hashCode ^
+      dob.hashCode;
+  }
 }

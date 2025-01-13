@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:edicion_limitada/common/utils/validation.dart';
-import 'package:edicion_limitada/common/widget/custom_bottom_navigation_bar.dart';
 import 'package:edicion_limitada/common/widget/custom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

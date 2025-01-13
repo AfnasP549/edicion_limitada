@@ -1,13 +1,13 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:convert';
-
 import 'package:edicion_limitada/features/product_detail_screen/view/product_detail_screen.dart';
 import 'package:edicion_limitada/features/shopping/bloc/shopping_bloc.dart';
 import 'package:edicion_limitada/model/product_model.dart';
 import 'package:edicion_limitada/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 class ShoppingScreen extends StatelessWidget {
   const ShoppingScreen({super.key});
@@ -20,7 +20,7 @@ class ShoppingScreen extends StatelessWidget {
         child: BlocBuilder<ShoppingBloc, ShoppingState>(
           builder: (context, state) {
             if (state is ShoppingLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return  Center(child:  Lottie.asset('image/lottie loading 3.json'));
             }
 
             if (state is ShoppinError) {
