@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:edicion_limitada/common/utils/app_color.dart';
+import 'package:edicion_limitada/common/utils/constatns/app_color.dart';
+import 'package:edicion_limitada/features/address_management/view/address_manage_screen.dart';
 import 'package:edicion_limitada/features/profile/model/profile_model.dart';
 import 'package:edicion_limitada/features/profile/view/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -132,8 +133,14 @@ class _UserProfileScreenState extends State<AccountScreen> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ProfileScreen()));
               }),
-              _buildMenuItem(Icons.location_on, 'Manage Address', () {}),
-              _buildMenuItem(Icons.chat, 'Chat with Admin', () {}),
+              _buildMenuItem(Icons.location_on, 'Manage Address', () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddressScreen()),
+                );
+              }),
+              _buildMenuItem(Icons.report, 'Report', () {}),
               _buildMenuItem(Icons.dark_mode, 'Switch Mode', () {}),
               _buildMenuItem(Icons.info, 'About', () {}),
               _buildMenuItem(Icons.privacy_tip, 'Privacy Policy', () {}),

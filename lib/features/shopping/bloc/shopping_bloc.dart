@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:edicion_limitada/model/brand_model.dart';
 import 'package:edicion_limitada/model/product_model.dart';
 import 'package:edicion_limitada/view_model/service/product_service.dart';
 import 'package:equatable/equatable.dart';
@@ -28,7 +27,7 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
         if(state is ShoppingLoaded){
           final brands = await ProductService().fetchBrands();
           // emit(ShoppingLoaded(products: (state as ShoppingLoaded).products, brands: brands));
-          emit(ShoppingLoaded(brands: brands, products: [])); 
+          emit(ShoppingLoaded(brands: brands, products: const [])); 
         }
       }catch(e){
         emit(ShoppinError(e.toString()));
@@ -75,9 +74,6 @@ class ShoppingBloc extends Bloc<ShoppingEvent, ShoppingState> {
       ));
     }
   } catch (e) {
-    // Handle the error gracefully
-    print('An error occurred: $e');
-    // Optionally emit an error state if needed
     emit(ShoppinError('Failed to select product'));
   }
 });

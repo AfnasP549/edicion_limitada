@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:edicion_limitada/common/widget/cart_icon_button.dart';
 import 'package:edicion_limitada/features/auth/bloc/auth_bloc.dart';
 import 'package:edicion_limitada/features/auth/views/pages/login_screen.dart';
-import 'package:edicion_limitada/features/profile/view/Profile_screen.dart';
+import 'package:edicion_limitada/features/profile/view/profile_screen.dart';
 import 'package:edicion_limitada/model/product_model.dart';
-import 'package:edicion_limitada/screens/search_screen.dart';
+import 'package:edicion_limitada/features/search/view/search_screen.dart';
 import 'package:edicion_limitada/features/shopping/view/shopping_screen.dart';
 import 'package:edicion_limitada/view_model/service/product_service.dart';
 import 'package:flutter/material.dart';
@@ -30,15 +31,13 @@ class HomeScreen extends StatelessWidget {
           actions: [
             IconButton(
                 onPressed: () {}, icon: const Icon(FontAwesomeIcons.bell)),
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(FontAwesomeIcons.bagShopping)),
+            CartIconButton(),
             IconButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProfileScreen()));
+                          builder: (context) =>  ProfileScreen()));
                 },
                 icon: const Icon(FontAwesomeIcons.user)),
           ],
@@ -87,10 +86,10 @@ class HomeScreen extends StatelessWidget {
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
                           return const Text('No products available');
                         }
-
+      
                         final products = snapshot.data!;
                         final displayProducts = products.take(6).toList();
-
+      
                         // Use first two products for carousel
                         final carouselImages = displayProducts
                             .take(2)
@@ -103,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ))
                             .toList();
-
+      
                         return Column(
                           children: [
                             CarouselSlider(
@@ -163,7 +162,7 @@ class HomeScreen extends StatelessWidget {
                                 final discountedPrice = (product.price -
                                         (product.price * (product.offer / 100)))
                                     .round();
-
+      
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(

@@ -1,29 +1,31 @@
-import 'package:edicion_limitada/common/utils/app_color.dart';
+import 'package:edicion_limitada/common/utils/constatns/app_color.dart';
 import 'package:edicion_limitada/features/account/account_screen.dart';
-import 'package:edicion_limitada/screens/favorite_screen.dart';
+import 'package:edicion_limitada/features/checkout/model/checkout_model.dart';
+import 'package:edicion_limitada/features/order/view/order_screen.dart';
+import 'package:edicion_limitada/features/favorite/view/favorite_screen.dart';
 import 'package:edicion_limitada/screens/home_screen.dart';
-import 'package:edicion_limitada/screens/order_screen.dart';
 import 'package:edicion_limitada/features/shopping/view/shopping_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 class CustomNavBar extends StatefulWidget {
-  const CustomNavBar({super.key});
+  const CustomNavBar({super.key,});
 
   @override
   State<CustomNavBar> createState() => _CustomNavBarState();
 }
 
 class _CustomNavBarState extends State<CustomNavBar> {
+  
   int _currentIndex = 0;
 
   final List<Widget> screens = [
     const HomeScreen(),
     FavoriteScreen(),
     ShoppingScreen(),
-    AccountScreen(),
     OrderScreen(),
+    AccountScreen(),
     
   ];
 
@@ -71,22 +73,28 @@ class _CustomNavBarState extends State<CustomNavBar> {
                         icon: Icons.home_outlined,iconSize: 32,
                         text: 'Home',
                       ),
-                      GButton(
+                        GButton(
                         icon: FontAwesomeIcons.heart,
                         text: 'Favourite',
                       ),
+                      
+                     
                       GButton(
                         icon: FontAwesomeIcons.compass,
                         text: 'Shopping',
                       ),
+                     
+                      GButton(
+                        icon: FontAwesomeIcons.listCheck,
+                        text: 'Order',
+                      ),
+                     
                       GButton(
                         icon: FontAwesomeIcons.user,
                         text: 'Account',
                       ),
-                      GButton(
-                        icon: Icons.shopping_bag_outlined,iconSize: 30,
-                        text: 'Cart',
-                      ),
+
+                     
                     ],
                   ),
                 ),

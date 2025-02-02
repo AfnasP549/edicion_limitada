@@ -45,31 +45,6 @@ class ProductService {
     }
   }
 
-//  Future<List<BrandModel>> fetchBrands() async {
-//     try {
-//       final QuerySnapshot fetchBrand =
-//           await _firesotre.collection('brands').get();
-
-//       return fetchBrand.docs.map((doc) {
-//         // Safely cast and handle potential null data
-//         final data = doc.data();
-//         if (data == null) {
-//           return BrandModel(name: '', imagUrl: '');
-//         }
-        
-//         try {
-//           return BrandModel.fromMap(data as Map<String, dynamic>);
-//         } catch (e) {
-//           print('Error parsing brand data: $e');
-//           return BrandModel(name: '', imagUrl: '');
-//         }
-//       }).toList();
-//     } catch (e) {
-//       print('Failed to Fetch Brands: $e');
-//       throw 'Failed to Fetch Brands: $e';
-//     }
-//   }
-
 
 }
 

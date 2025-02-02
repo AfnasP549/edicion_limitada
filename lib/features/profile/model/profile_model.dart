@@ -7,12 +7,14 @@ class UserModel {
   final String email;
   final int number;
   final int dob;
+  final String? imageUrl;
   UserModel({
     required this.uid,
     required this.fullName,
     required this.email,
     required this.number,
     required this.dob,
+    this.imageUrl,
   });
  
 
@@ -22,6 +24,7 @@ class UserModel {
     String? email,
     int? number,
     int? dob,
+    String? imageUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -29,6 +32,7 @@ class UserModel {
       email: email ?? this.email,
       number: number ?? this.number,
       dob: dob ?? this.dob,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -39,6 +43,7 @@ class UserModel {
       'email': email,
       'number': number,
       'dob': dob,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -49,6 +54,7 @@ class UserModel {
       email: map['email'] as String,
       number: map['number'] as int,
       dob: map['dob'] as int,
+      imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }
 
@@ -58,7 +64,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, fullName: $fullName, email: $email, number: $number, dob: $dob)';
+    return 'UserModel(uid: $uid, fullName: $fullName, email: $email, number: $number, dob: $dob, imageUrl: $imageUrl)';
   }
 
   @override
@@ -70,7 +76,8 @@ class UserModel {
       other.fullName == fullName &&
       other.email == email &&
       other.number == number &&
-      other.dob == dob;
+      other.dob == dob &&
+      other.imageUrl == imageUrl;
   }
 
   @override
@@ -79,6 +86,7 @@ class UserModel {
       fullName.hashCode ^
       email.hashCode ^
       number.hashCode ^
-      dob.hashCode;
+      dob.hashCode ^
+      imageUrl.hashCode;
   }
 }

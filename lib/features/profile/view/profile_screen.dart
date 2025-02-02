@@ -1,32 +1,40 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
+import 'package:edicion_limitada/common/utils/constatns/app_color.dart';
 import 'package:edicion_limitada/features/auth/views/service/auth_service.dart';
 import 'package:edicion_limitada/features/profile/model/profile_model.dart';
 import 'package:edicion_limitada/features/profile/view/edit_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:edicion_limitada/features/profile/bloc/profile_bloc.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  ProfileScreen({super.key});
 
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _auth = AuthService();
-  UserModel? userProfile;
 
-  Stream<UserModel?> getUserProfile(String uid) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .map((snapshot) {
-      if (snapshot.exists) {
-        return UserModel.fromMap(snapshot.data()!);
-      }
-      return null;
-    });
+  Widget _buildInfoContainer(String text) {
+    return Container(
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 197, 197, 197),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(13.0),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 69, 68, 68),
+            fontSize: 18,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -38,169 +46,164 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: StreamBuilder(
             stream: _auth.userStream,
             builder: (context, authSnapshot) {
-              if (authSnapshot.hasData) {
-                final user = authSnapshot.data;
+              if (!authSnapshot.hasData) {
+               //
+                
+                context.read<ProfileBloc>().add(ResetProfile());
+                return CircularProgressIndicator();
+              }
+               final user = authSnapshot.data;
+                if (user == null) {
+                return const Center(child: Text('No user found'));
+              }
 
-                // this stream builder for getting name and email id from authentication
-                return StreamBuilder<UserModel?>(
-                  stream: getUserProfile(user!.uid),
-                  builder: (context, profileSnapshot) {
-                    final userProfile = profileSnapshot.data;
+               // Load profile for the current user
+              context.read<ProfileBloc>().add(LoadProfile(user.uid));
 
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Name field remains the same
-                        Text(
-                          'Name',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 197, 197, 197),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(13.0),
-                            child: Text(
-                              userProfile?.fullName ?? user.displayName ?? '',
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 69, 68, 68),
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
 
-                        // Email field remains the same
-                        SizedBox(height: 10),
-                        Text(
-                          'Email',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 197, 197, 197),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(13.0),
-                            child: Text(
-                              user.email ?? '',
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 69, 68, 68),
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
 
-                        // Updated Phone Number field
-                        SizedBox(height: 10),
-                        Text(
-                          'Phone Number',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 197, 197, 197),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(13.0),
-                            child: Text(
-                              userProfile?.number == 0
-                                  ? ''
-                                  : userProfile?.number.toString() ?? '',
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 69, 68, 68),
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
+                return BlocBuilder<ProfileBloc, ProfileState>(
+                  builder: (context, state) {
+                    if (state is ProfileLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    
+                    if (state is ProfileLoadedState) {
+                      final userProfile = state.user;
+                      
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                        // Updated DOB field
-                        SizedBox(height: 10),
-                        Text(
-                          'D O B',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 197, 197, 197),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(13.0),
-                            child: Text(
-                              userProfile?.dob == 0
-                                  ? ''
-                                  : DateFormat('dd-MM-yyyy').format(
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                          userProfile?.dob ?? 0)),
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 69, 68, 68),
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        Spacer(),
-
-                        // Edit Profile button with updated UserModel
-                        ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => EditProfile(
-                                currentUser: UserModel(
-                                  uid: user.uid,
-                                  fullName:userProfile?.fullName ?? user.displayName ?? '',
-                                  email: user.email ?? '',
-                                  number: userProfile?.number ?? 0,
-                                  dob: userProfile?.dob ?? 0,
+                          if(userProfile.imageUrl!=null)
+                          Center(
+                            child: ClipOval(
+                              child: Image.memory(
+                                base64Decode(userProfile.imageUrl!),
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace){
+                                  return Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.greyShade,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(Icons.person, size: 60,),
+                                  );
+                                },
                                 ),
-                                onUpdate: (updatedUser) {},
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50)),
-                          child: Text(
-                            'Edit Profile',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                          )
+                          else
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: AppColor.greyShade,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.person, size: 60,),
                           ),
-                        )
-                      ],
-                    );
+                          SizedBox(height: 20,),
+
+
+
+                          const Text(
+                            'Name',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          _buildInfoContainer(
+                            userProfile.fullName 
+                          ),
+
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Email',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          _buildInfoContainer(user.email ?? ''),
+
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Phone Number',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          _buildInfoContainer(
+                            userProfile.number == 0
+                                ? ''
+                                : userProfile.number.toString()
+                          ),
+
+                          const SizedBox(height: 10),
+                          const Text(
+                            'D O B',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          _buildInfoContainer(
+                            userProfile.dob == 0
+                                ? ''
+                                : DateFormat('dd-MM-yyyy').format(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                      userProfile.dob
+                                    )
+                                  )
+                          ),
+
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => EditProfileDialog(
+                                  currentUser: UserModel(
+                                    uid: user.uid,
+                                    fullName: userProfile.fullName ,
+                                    email: user.email ?? '',
+                                    number: userProfile.number ,
+                                    dob: userProfile.dob ,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50)
+                            ),
+                            child: const Text(
+                              'Edit Profile',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }
+
+                    if (state is ProfileErrorState) {
+                      return Center(child: Text('Error: ${state.message}'));
+                    }
+
+                    return const Center(child: CircularProgressIndicator());
                   },
                 );
-              }
-              return const CircularProgressIndicator();
+              
             },
           ),
         ),
