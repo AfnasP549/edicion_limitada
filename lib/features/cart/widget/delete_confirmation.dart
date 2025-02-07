@@ -20,9 +20,9 @@ Future<void> showDeleteConfirmation(
                 Navigator.of(dialogContext).pop();
               },
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Remove'),
+            TextButton(
+             // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Remove', style: TextStyle(color: Colors.red),),
               onPressed: () {
                 context.read<CartBloc>().add(RemoveFromCartEvent(item.id));
                 Navigator.of(dialogContext).pop();

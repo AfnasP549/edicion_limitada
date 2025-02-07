@@ -56,8 +56,7 @@ class _ProductCardState extends State<ProductCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 5),
+                  child: Center(
                     child: _buildProductImage(product),
                   ),
                 ),
@@ -270,7 +269,7 @@ class _ProductCardState extends State<ProductCard> {
       return _buildPlaceholder();
     }
     return SizedBox(
-      width: 190,
+      width: 120,
       height: 200,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),

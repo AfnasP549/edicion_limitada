@@ -1,9 +1,8 @@
 import 'package:edicion_limitada/common/utils/constatns/app_color.dart';
 import 'package:edicion_limitada/features/account/account_screen.dart';
-import 'package:edicion_limitada/features/checkout/model/checkout_model.dart';
 import 'package:edicion_limitada/features/order/view/order_screen.dart';
 import 'package:edicion_limitada/features/favorite/view/favorite_screen.dart';
-import 'package:edicion_limitada/screens/home_screen.dart';
+import 'package:edicion_limitada/features/home_screen/view/home_screen.dart';
 import 'package:edicion_limitada/features/shopping/view/shopping_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

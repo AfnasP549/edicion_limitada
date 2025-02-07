@@ -26,7 +26,6 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     on<SelectAddressEvent>(_onSelectAddress);
     on<PlaceOrderEvent>(_onPlaceOrder);
     on<AddAddressInCheckoutEvent>(_onAddAddressInCheckout);
-    on<CancelOrderEvent>(_onCancelOrder);
   }
 
   //! Initialize Checkout
@@ -126,12 +125,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
       try {
         final currentState = state as CheckoutLoadedState;
 
-        // Add address using AddressBloc
         _addressBloc.add(AddAddressEvent(event.address));
-
-        // Wait for AddressBloc to update
-      //  await Future.delayed(const Duration(milliseconds: 200));
-
         final addressState = _addressBloc.state;
         if (addressState is AddressLoadedState) {
           emit(CheckoutLoadedState(
@@ -147,20 +141,5 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     }
   }
 
-  //! Cancel Order
- Future<void> _onCancelOrder(
-    CancelOrderEvent event,
-    Emitter<CheckoutState> emit,
-  ) async {
-    try {
-      emit(CheckoutProcessing()); // Add this state if not already defined
-      print('Starting order cancellation for ID: ${event.orderId}'); // Debug print
-      await _checkoutService.cancelOrder(event.orderId);
-      print('Order cancelled successfully'); // Debug print
-      emit(CheckoutSuccess(orderId: event.orderId));
-    } catch (e) {
-      print('Error cancelling order: $e'); // Debug print
-      emit(CheckoutFailureState(error: 'Failed to cancel order: $e'));
-    }
-  }
+
 }

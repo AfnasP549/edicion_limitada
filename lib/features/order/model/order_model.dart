@@ -47,11 +47,11 @@ class OrderModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
       'items': items.map((item) => item.toMap()).toList(),
-      'address': address.toMap(),  // This uses the existing toMap method from AddressModel
+      'address': address.toMap(),  
       'totalAmount': totalAmount,
       'status': status,
       'paymentMethod': paymentMethod,

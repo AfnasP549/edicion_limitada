@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:edicion_limitada/common/widget/cart_icon_button.dart';
 import 'package:edicion_limitada/features/favorite/bloc/favorite_bloc.dart';
 import 'package:edicion_limitada/features/favorite/service/favorite_service.dart';
 import 'package:edicion_limitada/features/shopping/bloc/shopping_bloc.dart';
@@ -18,18 +19,20 @@ class ShoppingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF9FC),
       body: BlocProvider(
-        create: (context) => FavoriteBloc(FavoriteService())..add(LoadFavoritesEvent()),
+        create: (context) =>
+            FavoriteBloc(FavoriteService())..add(LoadFavoritesEvent()),
         child: SafeArea(
           child: BlocBuilder<ShoppingBloc, ShoppingState>(
             builder: (context, state) {
               if (state is ShoppingLoading) {
-                return Center(child: Lottie.asset('image/lottie loading 3.json'));
+                return Center(
+                    child: Lottie.asset('image/lottie loading 3.json'));
               }
-        
+
               if (state is ShoppinError) {
                 return Center(child: Text(state.message));
               }
-        
+
               if (state is ShoppingLoaded) {
                 return CustomScrollView(
                   slivers: [
@@ -48,10 +51,12 @@ class ShoppingScreen extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                    CartIconButton(),
+
                               ],
                             ),
                             SizedBox(height: 10),
-        
+
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -94,7 +99,7 @@ class ShoppingScreen extends StatelessWidget {
                   ],
                 );
               }
-        
+
               return const SizedBox();
             },
           ),
@@ -142,7 +147,9 @@ class ShoppingScreen extends StatelessWidget {
                 brand,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: isSelected ? Colors.blue : const Color.fromARGB(255, 31, 28, 28),
+                  color: isSelected
+                      ? Colors.blue
+                      : const Color.fromARGB(255, 31, 28, 28),
                 ),
               ),
             ),
@@ -154,7 +161,6 @@ class ShoppingScreen extends StatelessWidget {
 
   //!PRoduct grid
   Widget _buildProductGrid(BuildContext context, List<ProductModel> products) {
-    
     return SliverPadding(
       padding: const EdgeInsets.all(16),
       sliver: SliverGrid(
@@ -169,12 +175,12 @@ class ShoppingScreen extends StatelessWidget {
             final discountedPrice = (products[index].price -
                     (products[index].price * (products[index].offer / 100)))
                 .round();
-            return  ProductCard(product: products[index], discountPrice: discountedPrice);
+            return ProductCard(
+                product: products[index], discountPrice: discountedPrice);
           },
           childCount: products.length,
         ),
       ),
     );
   }
-  
 }

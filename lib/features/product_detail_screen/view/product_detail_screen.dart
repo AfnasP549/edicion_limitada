@@ -5,6 +5,7 @@ import 'package:edicion_limitada/common/widget/custom_appBar.dart';
 import 'package:edicion_limitada/features/cart/bloc/cart_bloc.dart';
 import 'package:edicion_limitada/features/cart/model/cart_model.dart';
 import 'package:edicion_limitada/features/product_detail_screen/bloc/product_detail_bloc.dart';
+import 'package:edicion_limitada/features/product_detail_screen/widget/product_rating_section.dart';
 import 'package:edicion_limitada/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,6 +93,7 @@ class ProductDetailView extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildAboutSection(state),
                   const SizedBox(height: 24),
+                   ProductRatingsSection(productId: state.product.id),
                 ],
               ),
             ),

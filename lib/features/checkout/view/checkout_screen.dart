@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_const_declarations, unused_local_variable, unused_field
+
 import 'dart:convert';
 import 'package:edicion_limitada/common/widget/custom_nav_bar.dart';
 import 'package:edicion_limitada/features/address_management/model/address_model.dart';
@@ -6,9 +8,9 @@ import 'package:edicion_limitada/features/cart/bloc/cart_bloc.dart';
 import 'package:edicion_limitada/features/checkout/bloc/checkout_bloc.dart';
 import 'package:edicion_limitada/features/checkout/widget/address_card.dart';
 import 'package:edicion_limitada/features/checkout/widget/order_success_popup.dart';
-import 'package:edicion_limitada/features/shopping/view/shopping_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -49,7 +51,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     // Create order
     context.read<CheckoutBloc>().add(
-        PlaceOrderEvent(paymentMethod: 'Razorpay', paymentStatus: 'Pending'));
+        PlaceOrderEvent(paymentMethod: 'Razorpay', paymentStatus: 'Paid'));
 
     // Show success popup
     showDialog(
@@ -82,18 +84,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Handle external wallet
   }
 
-  void _startRazorpayPayment(CheckoutLoadedState state) {
+ void _startRazorpayPayment(CheckoutLoadedState state) {
+    final double finalTotal = state.totalAmount + 40.99; // Add delivery charge
     var options = {
-      'key': 'rzp_test_jIotm3SaZbXO9x', // Razorpay api key
-      'amount': (state.totalAmount * 100).toInt(), // Amount in paise
-      'name': 'Wulflex Shopping',
+      'key': 'rzp_test_jIotm3SaZbXO9x',
+      'amount': (finalTotal * 100).toInt(), // Use final total including delivery
+      'name': 'Limitada Shopping',
       'description': 'Payment for Order',
       'prefill': {
-        'contact': '', // Add customer phone number
-        'email': '' // Add customer email
+        'contact': '',
+        'email': ''
       },
       'external': {
-        'wallets': ['paytm'] // Optional: Add supported wallets
+        'wallets': ['paytm']
       }
     };
 
@@ -101,10 +104,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _razorpay.open(options);
     } catch (e) {
       debugPrint('Error starting Razorpay: $e');
-      // show shackbaar
     }
   }
-
   @override
   void dispose() {
     _razorpay.clear();
@@ -118,9 +119,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: BlocConsumer<CheckoutBloc, CheckoutState>(
         listener: (context, state) {
           if (state is CheckoutSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Order placed! ID: ${state.orderId}')),
-            );
+           Lottie.asset('image/successLottie.json');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const CustomNavBar()),
@@ -346,6 +345,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildTotalSection(CheckoutLoadedState state) {
+    final double deliveryCharge = 40.99;
+    final double finalTotal = state.totalAmount + deliveryCharge;
+
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -365,11 +367,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Subtotal',
+                  'Cart Total',
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
                   '₹${state.totalAmount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Delivery Charge',
+                  style: TextStyle(fontSize: 16),
+                ),
+                Text(
+                  '₹$deliveryCharge',
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -383,7 +399,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '₹${state.totalAmount.toStringAsFixed(2)}',
+                  '₹${finalTotal.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -400,11 +416,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   //!Place order button
 
-  Widget _buildPlaceOrderButton(BuildContext context,
+    Widget _buildPlaceOrderButton(BuildContext context,
       AddressModel? currentAddress, CheckoutLoadedState state) {
     final bool canPlaceOrder =
         currentAddress != null && selectedPaymentMethod != null;
     final bool isOnlinePayment = selectedPaymentMethod == 'ONLINE';
+    final double finalTotal = state.totalAmount + 40.99; // Add delivery charge
 
     return SizedBox(
       width: double.infinity,
@@ -415,25 +432,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   try {
                     _startRazorpayPayment(state);
                   } catch (e) {
-                    // Payment failed or was cancelled
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text('Payment failed: ${e.toString()}')),
                       );
                     }
-                    return; // Don't proceed with order placement
+                    return;
                   }
                 } else {
-
-                  //clear cart
-                   context.read<CartBloc>().add(const ClearCartEvent());
-                  // For COD
+                  context.read<CartBloc>().add(const ClearCartEvent());
                   context.read<CheckoutBloc>().add(PlaceOrderEvent(
                       paymentMethod: 'Cash on Delivery',
-                      paymentStatus: 'Pending'));
+                      paymentStatus: 'Paid'));
 
-                  // Show success popup
                   showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -467,4 +479,5 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
+
 }

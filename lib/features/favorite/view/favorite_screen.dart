@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:edicion_limitada/features/favorite/bloc/favorite_bloc.dart';
 import 'package:edicion_limitada/features/favorite/service/favorite_service.dart';
 import 'package:edicion_limitada/features/shopping/bloc/shopping_bloc.dart';
@@ -32,7 +34,6 @@ class FavoriteScreen extends StatelessWidget {
                   );
                 }
 
-                // Use BlocBuilder for ShoppingBloc to get products
                 return BlocBuilder<ShoppingBloc, ShoppingState>(
                   builder: (context, shoppingState) {
                     if (shoppingState is ShoppingLoaded) {
@@ -76,11 +77,6 @@ class FavoriteScreen extends StatelessWidget {
                                   return ProductCard(
                                     product: product,
                                     discountPrice: discountedPrice,
-                                    // onRemove: () {
-                                    //   context
-                                    //       .read<FavoriteBloc>()
-                                    //       .add(RemoveFromFavoritesEvent(product.id));
-                                    // },
                                   );
                                 },
                                 childCount: favoriteProducts.length,
@@ -90,11 +86,10 @@ class FavoriteScreen extends StatelessWidget {
                         ],
                       );
                     }
-                    return const Center(child: CircularProgressIndicator());
+                    return const SizedBox();
                   },
                 );
               }
-
               return const SizedBox();
             },
           ),

@@ -1,4 +1,3 @@
-import 'package:edicion_limitada/common/const.dart';
 import 'package:edicion_limitada/common/utils/constatns/app_color.dart';
 import 'package:edicion_limitada/features/address_management/bloc/address_bloc.dart';
 import 'package:edicion_limitada/features/address_management/service/address_service.dart';
@@ -7,8 +6,6 @@ import 'package:edicion_limitada/features/auth/bloc/auth_bloc.dart';
 import 'package:edicion_limitada/features/cart/bloc/cart_bloc.dart';
 import 'package:edicion_limitada/features/checkout/bloc/checkout_bloc.dart';
 import 'package:edicion_limitada/features/checkout/service/checkou_service.dart';
-import 'package:edicion_limitada/features/favorite/bloc/favorite_bloc.dart';
-import 'package:edicion_limitada/features/favorite/service/favorite_service.dart';
 import 'package:edicion_limitada/features/profile/bloc/profile_bloc.dart';
 import 'package:edicion_limitada/features/shopping/bloc/shopping_bloc.dart';
 import 'package:edicion_limitada/screens/splash_screen.dart';
@@ -16,21 +13,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
-  await _setUp();
+
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-  );
+  await Firebase.initializeApp();
+  //final walletService = WalletService();
   runApp(const MyApp());
 }
 
-Future<void> _setUp()async{
-  WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = stripePublishableKey;
-}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -49,8 +42,7 @@ class MyApp extends StatelessWidget {
     BlocProvider(
       create: (context) => ProfileBloc()
     ),
-    // BlocProvider(
-    //   create: (context)=> FavoriteBloc(FavoriteService())..add(LoadFavoritesEvent())),
+  
 
     BlocProvider(
       create: (context) => CartBloc()
@@ -74,7 +66,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
 
         // themeMode: ThemeMode.system,
-        // debugShowCheckedModeBanner: false,
+        // debugShowCheckedMo deBanner: false,
         // title: 'Edicion',
 
         // theme: AppTheme.lightTheme,

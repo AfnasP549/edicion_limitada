@@ -22,6 +22,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<UpdateQuantityEvent>(_onUpdateQuantity);
     on<LoadCartEvent>(_onLoadCart);
     on<ClearCartEvent>(_onClearCart);
+    on<RemoveOutOfStockEvent>(_onRemoveOutOfStock);
     
 
     add(LoadCartEvent());
@@ -105,4 +106,22 @@ Future<void> _onClearCart(
       ));
     }
   }
+
+
+//!remove out of stock
+    Future<void> _onRemoveOutOfStock(
+    RemoveOutOfStockEvent event,
+    Emitter<CartState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      await _cartService.removeOutOfStockItems();
+      add(LoadCartEvent());
+    } catch (e) {
+      emit(state.copyWith(
+        error: 'Failed to remove out-of-stock items: $e',
+        isLoading: false,
+      ));
+    }
+}
 }

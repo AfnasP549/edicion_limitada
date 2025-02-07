@@ -15,7 +15,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<ProductModel> _allProducts = [];
   List<ProductModel> _searchResults = [];
   List<String> _searchSuggestions = [];
-  List<String> _availableBrands = [];
+  //List<String> _availableBrands = [];
   String? _selectedBrand;
   bool _isLoading = true;
 
@@ -28,12 +28,12 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _loadProducts() async {
     try {
       final products = await ProductService().fetchProducts();
-      final brands = products.map((p) => p.brand).toSet().toList()
-        ..sort((a, b) => a.compareTo(b));
+   //   final brands = products.map((p) => p.brand).toSet().toList()
+      //  ..sort((a, b) => a.compareTo(b));
       
       setState(() {
         _allProducts = products;
-        _availableBrands = brands;
+      //  _availableBrands = brands;
         _searchResults = products; // Initially show all products
         _isLoading = false;
       });
@@ -67,45 +67,45 @@ class _SearchScreenState extends State<SearchScreen> {
     return products.where((p) => p.brand == _selectedBrand).toList();
   }
 
-  void _onBrandSelected(String? brand) {
-    setState(() {
-      _selectedBrand = brand;
-      _searchResults = _filterProducts(_searchController.text);
-    });
-  }
+  // void _onBrandSelected(String? brand) {
+  //   setState(() {
+  //     _selectedBrand = brand;
+  //     _searchResults = _filterProducts(_searchController.text);
+  //   });
+  // }
 
-  Widget _buildBrandFilter() {
-    return Container(
-      height: 50,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _availableBrands.length + 1, // +1 for "All" option
-        itemBuilder: (context, index) {
-          final isAllOption = index == 0;
-          final brand = isAllOption ? null : _availableBrands[index - 1];
-          final isSelected = _selectedBrand == brand;
-          final displayText = isAllOption ? "All Brands" : brand!;
+  // Widget _buildBrandFilter() {
+  //   return Container(
+  //     height: 50,
+  //     margin: const EdgeInsets.symmetric(vertical: 8),
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       padding: const EdgeInsets.symmetric(horizontal: 16),
+  //       itemCount: _availableBrands.length + 1, // +1 for "All" option
+  //       itemBuilder: (context, index) {
+  //         final isAllOption = index == 0;
+  //         final brand = isAllOption ? null : _availableBrands[index - 1];
+  //         final isSelected = _selectedBrand == brand;
+  //         final displayText = isAllOption ? "All Brands" : brand!;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(displayText),
-              selected: isSelected,
-              onSelected: (_) => _onBrandSelected(brand),
-              backgroundColor: Colors.grey.shade100,
-              selectedColor: Colors.blue.shade100,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.blue.shade900 : Colors.black87,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  //         return Padding(
+  //           padding: const EdgeInsets.only(right: 8),
+  //           child: FilterChip(
+  //             label: Text(displayText),
+  //             selected: isSelected,
+  //             onSelected: (_) => _onBrandSelected(brand),
+  //             backgroundColor: Colors.grey.shade100,
+  //             selectedColor: Colors.blue.shade100,
+  //             labelStyle: TextStyle(
+  //               color: isSelected ? Colors.blue.shade900 : Colors.black87,
+  //               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   List<String> _generateSuggestions(String query) {
     Set<String> suggestions = {};
@@ -171,7 +171,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 if (_searchSuggestions.isNotEmpty && _searchController.text.isNotEmpty)
                   _buildSuggestions(),
-                _buildBrandFilter(),
+               // _buildBrandFilter(),
                 _buildSearchResults(),
               ],
             ),

@@ -19,6 +19,19 @@ class AppColor{
   static Color greyShade = Colors.grey.shade300;
 
 
+  //!BoxSahdow
+  static Color boxShadow = Colors.grey.shade100;
+
+
+  //!shimmer
+  static Color? shimmerLGrey = Colors.grey[300];
+  static Color? shimmerGrey = Colors.grey[100];
+
+  
+
+
+
+
   //   //!App basic color
   // static Color primary = Color(0xFF4b68FF);
   // static Color secondary = Color(0xFFFFE24B);
@@ -36,10 +49,14 @@ class AppColor{
 
   // ]);
 
-  // //!Text color
-  // static Color textPrimary = Color(0xFF333333);
-  // static Color textSecondary = Color(0xff6c757d);
-  // static Color textWhite = Colors.white;
+  //!Text color
+  static Color textPrimary = Color(0xFF333333);
+  static Color textSecondary = Color(0xff6c757d);
+  static Color textWhite = Colors.white;
+  static Color textBlue = const Color.fromARGB(235, 91, 158, 225);
+  static Color textGreen = Colors.green;
+  static Color textGrey = Colors.grey;
+
 
 
   // //!Background color
@@ -47,24 +64,26 @@ class AppColor{
   // static const Color dark = Color(0xFF272727);
   // static const Color primaryBackground = Color(0xFFF3f5ff);
 
-  // //!Backgroun container color
-  // static const Color lightContainer = Color(0xfff6f6f6);
-  // static const Color darkContainer = Colors.white;
+  //!Backgroun container color
+  static const Color lightContainer = Colors.white;
+  static const Color greyContainer = Colors.grey;
+  static  Color? lgreenContainer = Colors.green[50];
+  
 
   // //!button color
   // static const Color buttonPrimary = Color(0xff4b68ff);
   // static const Color buttonSecondary = Color(0xff6c757d);
   // static const Color buttonDisabled = Color(0xffc4c4c4);
 
-  // //!border color
-  // static const Color borderPrimary = Color(0xffd9d9d9);
-  // static const Color borderSecondary = Color(0xffe6e6e6);
+  //!border color
+  static const Color borderPrimary = Color(0xffd9d9d9);
+  static const Color borderSecondary = Color(0xffe6e6e6);
 
-  // //!error and validation 
-  // static const Color error = Color(0xffd32f2f);
-  // static const Color success = Color(0xff388e3c);
-  // static const Color warning = Color(0xfff57c00);
-  // static const Color info = Color(0xff1976d2);
+  //!error and validation 
+  static const Color error = Color(0xffd32f2f);
+  static const Color success = Color(0xff388e3c);
+  static const Color warning = Color(0xfff57c00);
+  static const Color info = Color(0xff1976d2);
 
   // //!Neutral colors
   // static const Color black = Color(0xff232323);

@@ -14,23 +14,40 @@ class ProfileScreen extends StatelessWidget {
 
   final AuthService _auth = AuthService();
 
-  Widget _buildInfoContainer(String text) {
+  Widget _buildInfoTile({
+    required String title, 
+    required String value, 
+    required IconData icon,
+  }) {
     return Container(
-      width: double.infinity,
-      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: const Color.fromARGB(255, 197, 197, 197),
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(13.0),
-        child: Text(
-          text,
+      child: ListTile(
+        leading: Icon(icon, color: AppColor.primary, size: 30),
+        title: Text(
+          title,
           style: const TextStyle(
-            color: Color.fromARGB(255, 69, 68, 68),
-            fontSize: 18,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        trailing: Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[700],
           ),
         ),
       ),
@@ -40,173 +57,188 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: StreamBuilder(
-            stream: _auth.userStream,
-            builder: (context, authSnapshot) {
-              if (!authSnapshot.hasData) {
-               //
+        child: StreamBuilder(
+          stream: _auth.userStream,
+          builder: (context, authSnapshot) {
+            if (!authSnapshot.hasData) {
+              context.read<ProfileBloc>().add(ResetProfile());
+              return const Center(child: CircularProgressIndicator());
+            }
+            
+            final user = authSnapshot.data;
+            if (user == null) {
+              return const Center(child: Text('No user found'));
+            }
+
+            context.read<ProfileBloc>().add(LoadProfile(user.uid));
+
+            return BlocBuilder<ProfileBloc, ProfileState>(
+              builder: (context, state) {
+                if (state is ProfileLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 
-                context.read<ProfileBloc>().add(ResetProfile());
-                return CircularProgressIndicator();
-              }
-               final user = authSnapshot.data;
-                if (user == null) {
-                return const Center(child: Text('No user found'));
-              }
-
-               // Load profile for the current user
-              context.read<ProfileBloc>().add(LoadProfile(user.uid));
-
-
-
-                return BlocBuilder<ProfileBloc, ProfileState>(
-                  builder: (context, state) {
-                    if (state is ProfileLoadingState) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    
-                    if (state is ProfileLoadedState) {
-                      final userProfile = state.user;
-                      
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                if (state is ProfileLoadedState) {
+                  final userProfile = state.user;
+                  
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-
-                          if(userProfile.imageUrl!=null)
+                          // Profile Picture
                           Center(
-                            child: ClipOval(
-                              child: Image.memory(
-                                base64Decode(userProfile.imageUrl!),
-                                width: 150,
-                                height: 150,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace){
-                                  return Container(
-                                    width: 120,
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: AppColor.greyShade,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(Icons.person, size: 60,),
-                                  );
-                                },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColor.primary,
+                                  width: 4,
                                 ),
-                            ),
-                          )
-                          else
-                          Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: AppColor.greyShade,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(Icons.person, size: 60,),
-                          ),
-                          SizedBox(height: 20,),
-
-
-
-                          const Text(
-                            'Name',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          _buildInfoContainer(
-                            userProfile.fullName 
-                          ),
-
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Email',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          _buildInfoContainer(user.email ?? ''),
-
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Phone Number',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          _buildInfoContainer(
-                            userProfile.number == 0
-                                ? ''
-                                : userProfile.number.toString()
-                          ),
-
-                          const SizedBox(height: 10),
-                          const Text(
-                            'D O B',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          _buildInfoContainer(
-                            userProfile.dob == 0
-                                ? ''
-                                : DateFormat('dd-MM-yyyy').format(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                      userProfile.dob
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: userProfile.imageUrl != null
+                                  ? ClipOval(
+                                      child: Image.memory(
+                                        base64Decode(userProfile.imageUrl!),
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return _defaultProfileIcon();
+                                        },
+                                      ),
                                     )
-                                  )
+                                  : _defaultProfileIcon(),
+                            ),
                           ),
 
-                          const Spacer(),
-                          ElevatedButton(
+                          const SizedBox(height: 20),
+
+                          // Profile Name
+                          Text(
+                            userProfile.fullName,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+
+                          const SizedBox(height: 30),
+
+                          // Profile Information Tiles
+                          _buildInfoTile(
+                            title: 'Email',
+                            value: user.email ?? '',
+                            icon: Icons.email_outlined,
+                          ),
+
+                          _buildInfoTile(
+                            title: 'Phone Number',
+                            value: userProfile.number == 0 
+                              ? 'Not set' 
+                              : userProfile.number.toString(),
+                            icon: Icons.phone_outlined,
+                          ),
+
+                          _buildInfoTile(
+                            title: 'Date of Birth',
+                            value: userProfile.dob == 0
+                              ? 'Not set'
+                              : DateFormat('dd-MM-yyyy').format(
+                                  DateTime.fromMillisecondsSinceEpoch(userProfile.dob)
+                                ),
+                            icon: Icons.calendar_today_outlined,
+                          ),
+
+                          const SizedBox(height: 30),
+
+                          // Edit Profile Button
+                          ElevatedButton.icon(
                             onPressed: () {
                               showDialog(
                                 context: context,
                                 builder: (context) => EditProfileDialog(
                                   currentUser: UserModel(
                                     uid: user.uid,
-                                    fullName: userProfile.fullName ,
+                                    fullName: userProfile.fullName,
                                     email: user.email ?? '',
-                                    number: userProfile.number ,
-                                    dob: userProfile.dob ,
+                                    number: userProfile.number,
+                                    dob: userProfile.dob,
                                   ),
                                 ),
                               );
                             },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 50)
-                            ),
-                            child: const Text(
+                            icon: const Icon(Icons.edit),
+                            label: const Text(
                               'Edit Profile',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20
+                                fontSize: 16,
                               ),
                             ),
-                          )
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              backgroundColor: AppColor.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
                         ],
-                      );
-                    }
+                      ),
+                    ),
+                  );
+                }
 
-                    if (state is ProfileErrorState) {
-                      return Center(child: Text('Error: ${state.message}'));
-                    }
+                if (state is ProfileErrorState) {
+                  return Center(child: Text('Error: ${state.message}'));
+                }
 
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                );
-              
-            },
-          ),
+                return const Center(child: CircularProgressIndicator());
+              },
+            );
+          },
         ),
+      ),
+    );
+  }
+
+  Widget _defaultProfileIcon() {
+    return Container(
+      width: 150,
+      height: 150,
+      decoration: BoxDecoration(
+        color: AppColor.greyShade,
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(
+        Icons.person, 
+        size: 80, 
+        color: Colors.white,
       ),
     );
   }

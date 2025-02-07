@@ -12,15 +12,16 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   StreamSubscription? _favoriteSubscription;
   FavoriteBloc(this._favoriteService) : super(FavoriteInitial()) {
     on<LoadFavoritesEvent>(_onLoadFavorites);
-      on<AddTOFavoritesEvent>(_onAddToFavorites);
-        on<RemoveFromFavoritesEvent>(_onRemoveFromFavorites);
+    on<AddTOFavoritesEvent>(_onAddToFavorites);
+    on<RemoveFromFavoritesEvent>(_onRemoveFromFavorites);
     on<CheckFavoriteStatusEvent>(_onCheckFavoriteStatus);
     on<UpdateFavoritesEvent>(_onUpdateFavorites);
 
-     add(LoadFavoritesEvent());
+    add(LoadFavoritesEvent());
   }
 //!Load
-  void _onLoadFavorites(LoadFavoritesEvent event, Emitter<FavoriteState> emit) async {
+  void _onLoadFavorites(
+      LoadFavoritesEvent event, Emitter<FavoriteState> emit) async {
     emit(FavoriteLodingState());
     try {
       await _favoriteSubscription?.cancel();
@@ -38,18 +39,19 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   }
 
 //!update
-   void _onUpdateFavorites(UpdateFavoritesEvent event, Emitter<FavoriteState> emit) {
+  void _onUpdateFavorites(
+      UpdateFavoritesEvent event, Emitter<FavoriteState> emit) {
     emit(FavoriteLoadedState(
       favoriteIds: event.favoriteIds,
-      favoriteStatus: {
-        for (var id in event.favoriteIds) id: true
-      },
+      favoriteStatus: {for (var id in event.favoriteIds) id: true},
     ));
   }
 
 //!add
-   void _onAddToFavorites(AddTOFavoritesEvent event, Emitter<FavoriteState> emit) async {
+  void _onAddToFavorites(
+      AddTOFavoritesEvent event, Emitter<FavoriteState> emit) async {
     try {
+      emit(FavoriteLodingState());
       await _favoriteService.addFavorites(event.productId);
     } catch (e) {
       emit(FavoriteErrorState('Failed to add favorite: ${e.toString()}'));
@@ -57,26 +59,26 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   }
 
 //!remove
-void _onRemoveFromFavorites(RemoveFromFavoritesEvent event, Emitter<FavoriteState> emit) async {
+  void _onRemoveFromFavorites(
+      RemoveFromFavoritesEvent event, Emitter<FavoriteState> emit) async {
     try {
+      emit(FavoriteLodingState());
       await _favoriteService.removeFromFavorites(event.productId);
     } catch (e) {
       emit(FavoriteErrorState('Failed to remove favorite: ${e.toString()}'));
     }
   }
 
-
-@override
+  @override
   Future<void> close() {
     _favoriteSubscription?.cancel();
     return super.close();
   }
 
-
-
-
-  void _onCheckFavoriteStatus(CheckFavoriteStatusEvent event, Emitter<FavoriteState> emit) async {
+  void _onCheckFavoriteStatus(
+      CheckFavoriteStatusEvent event, Emitter<FavoriteState> emit) async {
     try {
+      emit(FavoriteLodingState());
       final isFavorite = await _favoriteService.isFavorite(event.productId);
       if (state is FavoriteLoadedState) {
         final currentState = state as FavoriteLoadedState;

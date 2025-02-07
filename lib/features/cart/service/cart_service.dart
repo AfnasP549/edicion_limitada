@@ -9,8 +9,6 @@ class CartService {
 
   CartService() : _firestore = FirebaseFirestore.instance;
 
-
-//!fetch
   Future<List<CartItem>> fetchCart() async {
     final snapshot = await _firestore.collection('carts').get();
     if (snapshot.docs.isEmpty) return [];
@@ -40,9 +38,11 @@ class CartService {
     }).whereType<CartItem>().toList();
   }
 
-
-//!add
   Future<void> addToCart(ProductModel product, int quantity) async {
+    if (product.stock <= 0) {
+      throw Exception('Cannot add out-of-stock items to cart');
+    }
+
     final cartQuery = await _firestore
         .collection('carts')
         .where('productId', isEqualTo: product.id)
@@ -60,25 +60,40 @@ class CartService {
       await _firestore.collection('carts').add({
         'productId': product.id,
         'quantity': quantity,
-        'imageUrl' : product.imageUrls,
+        'imageUrl': product.imageUrls,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
     }
   }
 
-
-//!delete from cart
-Future<void> removeFromCart(String documentId) async {
-  try {
-    await _firestore.collection('carts').doc(documentId).delete();
-    print('Successfully removed document: $documentId');
-  } catch (e) {
-    print('Error removing document: $e');
-    throw Exception('Failed to remove Cart Item: $e');
+  Future<void> removeFromCart(String documentId) async {
+    try {
+      await _firestore.collection('carts').doc(documentId).delete();
+      print('Successfully removed document: $documentId');
+    } catch (e) {
+      print('Error removing document: $e');
+      throw Exception('Failed to remove Cart Item: $e');
+    }
   }
-}
 
+  Future<void> removeOutOfStockItems() async {
+    try {
+      final cartItems = await fetchCart();
+      final batch = _firestore.batch();
+      
+      for (var item in cartItems) {
+        if (item.product.stock <= 0) {
+          final docRef = _firestore.collection('carts').doc(item.id);
+          batch.delete(docRef);
+        }
+      }
+      
+      await batch.commit();
+    } catch (e) {
+      throw Exception('Failed to remove out-of-stock items: $e');
+    }
+  }
 
   Future<void> updateQuantity(String productId, int quantity) async {
     await _firestore.collection('carts').doc(productId).update({
@@ -87,14 +102,9 @@ Future<void> removeFromCart(String documentId) async {
     });
   }
 
- 
-//!clear cart
-   Future<void> clearCart() async {
+  Future<void> clearCart() async {
     try {
-      final cartQuery = await _firestore
-          .collection('carts')
-          .get(); // Remove the where clause since userId isn't stored
-
+      final cartQuery = await _firestore.collection('carts').get();
       final batch = _firestore.batch();
       
       for (var doc in cartQuery.docs) {

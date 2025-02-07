@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_import
-
 import 'package:edicion_limitada/features/address_management/bloc/address_bloc.dart';
 import 'package:edicion_limitada/features/address_management/service/address_service.dart';
 import 'package:edicion_limitada/features/cart/widget/cart_item.dart';
@@ -8,9 +6,9 @@ import 'package:edicion_limitada/features/checkout/service/checkou_service.dart'
 import 'package:edicion_limitada/features/checkout/view/checkout_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:edicion_limitada/features/cart/bloc/cart_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -22,23 +20,11 @@ class CartScreen extends StatelessWidget {
         if (state.items.isEmpty) {
           return Scaffold(
             appBar: AppBar(title: const Text('Cart')),
-            body: const Center(
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Your cart is empty',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  Lottie.asset('image/cartempty.json'),
                 ],
               ),
             ),
@@ -48,6 +34,40 @@ class CartScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Cart'),
+            actions: [
+              if (state.items.any((item) => item.product.stock <= 0))
+                IconButton(
+                  icon: const Icon(Icons.delete_sweep),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Remove Out-of-Stock Items'),
+                        content: const Text(
+                          'Would you like to remove all out-of-stock items from your cart?'
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              context.read<CartBloc>().add(RemoveOutOfStockEvent());
+                              Navigator.pop(context);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color.fromARGB(255, 77, 73, 73),
+                            ),
+                            child: const Text('Remove', style: TextStyle(color: Colors.white),),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  tooltip: 'Remove all out-of-stock items',
+                ),
+            ],
           ),
           body: Column(
             children: [
@@ -93,8 +113,7 @@ class CartScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Show stock warnings if any
-            _buildStockWarnings(state),
+            _buildStockWarnings(context, state),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +199,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStockWarnings(CartState state) {
+  Widget _buildStockWarnings(BuildContext context, CartState state) {
     final stockIssues = state.items
         .where((item) =>
             item.quantity > item.product.stock || item.product.stock <= 0)
@@ -190,21 +209,55 @@ class CartScreen extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.red[50],
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: stockIssues.map((item) {
           if (item.product.stock <= 0) {
-            return Text(
-              '${item.product.name} is out of stock',
-              style: const TextStyle(color: Colors.red, fontSize: 12),
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${item.product.name} is out of stock',
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.read<CartBloc>().add(
+                        RemoveFromCartEvent(item.id),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: const Size(60, 25),
+                    ),
+                    child: const Text(
+                      'Remove',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             );
           } else {
-            return Text(
-              '${item.product.name} has only ${item.product.stock} units available',
-              style: const TextStyle(color: Colors.red, fontSize: 12),
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                '${item.product.name} has only ${item.product.stock} units available',
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
             );
           }
         }).toList(),
@@ -212,8 +265,3 @@ class CartScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
