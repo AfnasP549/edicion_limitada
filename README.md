@@ -1,16 +1,65 @@
-# edicion_limitada
+📱 Edicion Limitada - E-commerce App
 
-A new Flutter project.
+📌 Overview
 
-## Getting Started
+Edicion Limitada is a mobile e-commerce application designed for selling limited-edition phones. It provides seamless shopping experiences with multiple payment options, user authentication, and order management.
 
-This project is a starting point for a Flutter application.
+🚀 Features
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+🔐 User Authentication
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Google Sign-In & Email/Password authentication.
+
+🛒 Product Management
+
+Browse & add limited-edition phones to the cart.
+
+Save favorite products to a Favorites screen.
+
+💳 Purchasing Options
+
+Cash on Delivery (COD)
+
+Razorpay for secure online transactions.
+
+📦 Order History & Cancellations
+
+View past orders in Order History.
+
+Order cancellations 
+
+👤 User Profile
+
+Manage personal details and order preferences.
+
+
+🛠 Tech Stack
+
+Framework: Flutter
+
+State Management: BLoC 
+
+Database: Firebase Firestore
+
+Authentication: Firebase Auth (Google & Email/Password)
+
+Payments: Razorpay API
+
+Tools: Git, GitHub, Postman, VS Code, Android Studio
+
+📥 Installation
+
+https://github.com/AfnasP549/edicion_limitada.git
+
+flutter pub get
+
+flutter run
+
+
+📬 Contact
+
+
+📧 Email: afnasp549@gmail.com
+
+📞 Phone: +91 8156961549
